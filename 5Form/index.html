@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TMC Ledger</title>
+<meta name="description" content="TMC Ledger: a free online bookkeeping tool with income and spending records, budget alerts, trend charts, savings goals and an interest calculator.">
+<meta name="theme-color" content="#17714F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TMC Ledger">
+<meta property="og:description" content="A free online bookkeeping tool with income and spending records, budget alerts, trend charts, savings goals and an interest calculator.">
+<link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1 data-i18n="title"></h1>
+    <select id="lang" data-i18n-aria="lang">
+      <option value="zh">中文</option>
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="kk">Қазақша</option>
+    </select>
+  </div>
+  <section id="auth">
+    <div class="seg" role="group">
+      <button type="button" id="tLogin" aria-pressed="true" data-i18n="login"></button>
+      <button type="button" id="tReg" aria-pressed="false" data-i18n="register"></button>
+    </div>
+    <label><span data-i18n="user"></span><input id="un" type="text" autocomplete="username" maxlength="20"></label>
+    <label style="margin-top:12px"><span data-i18n="pass"></span><input id="pw" type="password" autocomplete="current-password"></label>
+    <label id="pw2l" style="margin-top:12px" hidden><span data-i18n="pass2"></span><input id="pw2" type="password" autocomplete="new-password"></label>
+    <p class="err" id="aerr" role="alert"></p>
+    <button class="add" id="go" type="button" data-i18n="login"></button>
+    <p class="hint" data-i18n="noteAuth"></p>
+  </section>
+
+  <div id="app" hidden>
+  <nav class="nav"><button type="button" data-go="s-sum" data-i18n="bal"></button><button type="button" data-go="s-bars" data-i18n="bars"></button><button type="button" data-go="s-goal" data-i18n="goalT"></button><button type="button" data-go="s-tr" data-i18n="tr"></button><button type="button" data-go="s-add" data-i18n="add"></button><button type="button" data-go="s-list" data-i18n="list"></button><button type="button" data-go="s-bk" data-i18n="bk"></button><button type="button" data-go="s-int" data-i18n="intT"></button><button type="button" data-go="s-th" data-i18n="thT"></button></nav>
+  <p class="who"><span class="wl"><span id="uname"></span><button type="button" id="hi" class="hi" data-i18n="hi"></button><span class="dev" role="group"><button type="button" data-dev="phone" data-i18n="dPhone"></button><button type="button" data-dev="pc" data-i18n="dPc"></button><button type="button" data-dev="pad" data-i18n="dPad"></button></span></span><button type="button" id="logout" data-i18n="logout"></button></p>
+  <p class="hmsg" id="hmsg" aria-live="polite"></p>
+  <label style="margin-bottom:12px"><span data-i18n="cur"></span><select id="cur"></select></label>
+  <div class="month">
+    <button class="icon" id="prev" data-i18n-aria="prev">‹</button>
+    <span id="ym"></span>
+    <button class="icon" id="next" data-i18n-aria="next">›</button>
+  </div>
+
+  <section aria-live="polite">
+    <p class="sub" id="s-sum" style="margin:0 0 2px" data-i18n="bal"></p>
+    <p class="balance" id="bal">0.00</p>
+    <p class="sub" id="balsub"></p>
+    <div class="two">
+      <div><span data-i18n="inc"></span><b class="in" id="inc">0.00</b></div>
+      <div><span data-i18n="exp"></span><b class="out" id="exp">0.00</b></div>
+    </div>
+    <p class="note" id="note"></p>
+  </section>
+
+  <section>
+    <h2 id="s-bars" data-i18n="bars"></h2>
+    <div id="warns"></div><div id="pie"></div><div id="bars"></div>
+  </section>
+
+  <section>
+    <h2 id="s-goal" data-i18n="goalT"></h2>
+    <div id="goalNew"><div class="grid"><input id="gn" type="text" maxlength="30" data-i18n-ph="gName"><input id="gt" type="number" min="0" step="any" inputmode="decimal" data-i18n-ph="gTarget"></div><button class="add" id="gset" type="button" data-i18n="gSet"></button></div>
+    <div id="goalView" hidden>
+      <b id="gtitle"></b>
+      <div class="gbar"><div class="gfill" id="gfill"></div></div>
+      <p class="sub" id="gprog" style="margin:0"></p>
+      <p class="sub" id="gdone" style="color:var(--in);font-weight:600;margin:4px 0 10px"></p>
+      <div class="cr"><input id="gdep" type="number" step="any" inputmode="decimal" data-i18n-ph="gDep"><button type="button" id="gadd" data-i18n="gAdd"></button></div>
+      <button type="button" id="gdel" class="del" style="font-size:14px;width:auto;padding:0" data-i18n="gDel"></button>
+    </div>
+  </section>
+  <section>
+    <h2 id="s-tr" data-i18n="tr"></h2>
+    <div class="seg sm" role="group"><button type="button" id="trM" aria-pressed="true" data-i18n="trM"></button><button type="button" id="trY" aria-pressed="false" data-i18n="trY"></button></div>
+    <div class="tr" id="trend"></div>
+  </section>
+  <section>
+    <details><summary data-i18n="bud"></summary>
+      <p class="hint" data-i18n="budHint"></p>
+      <div class="grid" id="budgrid" style="margin-top:12px"></div>
+    </details>
+  </section>
+  <section>
+    <details><summary data-i18n="cMgr"></summary>
+      <div id="catbox" style="margin-top:12px"></div>
+    </details>
+  </section>
+  <section>
+    <h2 id="s-add" data-i18n="add"></h2>
+    <div class="seg" role="group" data-i18n-aria="type">
+      <button type="button" id="tOut" aria-pressed="true" data-i18n="exp"></button>
+      <button type="button" id="tIn" aria-pressed="false" data-i18n="inc"></button>
+    </div>
+    <div class="grid">
+      <label><span data-i18n="amt"></span><input id="amt" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label>
+      <label><span data-i18n="cat"></span><select id="cat"></select></label>
+      <label><span data-i18n="date"></span><input id="date" type="date"></label>
+      <label><span data-i18n="memo"></span><input id="memo" type="text" maxlength="40" data-i18n-ph="ph"></label>
+    </div>
+    <label class="chk"><input type="checkbox" id="rep"><span data-i18n="rep"></span></label>
+    <p class="err" id="err" role="alert"></p>
+    <button class="add" id="add" type="button" data-i18n="save"></button>
+    <button class="add" id="cxl" type="button" hidden data-i18n="cxl" style="background:transparent;color:var(--muted);border:1px solid var(--line)"></button>
+  </section>
+
+  <section>
+    <h2 id="s-list" data-i18n="list"></h2>
+    <div class="tools"><input id="q" type="search" data-i18n-ph="q"><select id="fcat"></select></div>
+    <div class="selbar" id="selbar" hidden><label class="chk" style="margin:0"><input type="checkbox" id="selall"><span data-i18n="selAll"></span></label><span id="selN"></span><button type="button" id="delSel" data-i18n="delSel"></button></div>
+    <div id="list"></div>
+    <details id="rulesBox" style="margin-top:14px" hidden><summary data-i18n="rules"></summary><div id="rules"></div></details>
+  </section>
+
+  <section>
+    <h2 id="s-bk" data-i18n="bk"></h2>
+    <div class="bk">
+      <button type="button" id="exJ" data-i18n="exJ"></button>
+      <button type="button" id="exC" data-i18n="exC"></button>
+      <button type="button" id="imp" data-i18n="imp"></button>
+    </div>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+    <p class="msg" id="bmsg" role="status"></p>
+    <textarea class="bkbox" id="bbox" readonly hidden data-i18n-aria="bBox"></textarea>
+    <p class="hint" data-i18n="bkHint"></p>
+  </section>
+  <section>
+    <h2 id="s-int" data-i18n="intT"></h2>
+    <div class="grid">
+      <label><span data-i18n="iP"></span><input id="iP" type="number" min="0" step="any" inputmode="decimal" value="1000"></label>
+      <label><span data-i18n="iR"></span><div class="cr" style="margin:4px 0 0"><input id="iR" type="number" min="0" step="any" inputmode="decimal" value="5"><select id="iRp"><option value="m" data-i18n="iRM"></option><option value="y" data-i18n="iRY" selected></option></select></div></label>
+      <label><span data-i18n="iN"></span><div class="cr" style="margin:4px 0 0"><input id="iN" type="number" min="0" step="any" inputmode="decimal" value="12"><select id="iU"><option value="m" data-i18n="iDM"></option><option value="y" data-i18n="iDY"></option></select></div></label>
+      <div class="seg" role="group" style="margin:22px 0 0"><button type="button" id="iCs" aria-pressed="true" data-i18n="iS"></button><button type="button" id="iCc" aria-pressed="false" data-i18n="iC"></button></div>
+    </div>
+    <p class="hint" data-i18n="iHint"></p>
+    <div id="iOut" style="margin-top:10px"></div>
+  </section>
+  <section>
+    <h2 id="s-th" data-i18n="thT"></h2>
+    <p class="sub" style="margin:0 0 6px" data-i18n="thMode"></p>
+    <div class="seg" style="grid-template-columns:1fr 1fr 1fr"><button type="button" data-tm="auto" data-i18n="thAuto"></button><button type="button" data-tm="light" data-i18n="thLight"></button><button type="button" data-tm="dark" data-i18n="thDark"></button></div>
+    <p class="sub" style="margin:0 0 6px" data-i18n="thPre"></p>
+    <div class="sw" id="sw"></div>
+    <div class="grid" style="margin-top:12px">
+      <label><span data-i18n="thAc"></span><input type="color" id="cAc"></label>
+      <label><span data-i18n="inc"></span><input type="color" id="cIn"></label>
+      <label><span data-i18n="exp"></span><input type="color" id="cOut"></label>
+    </div>
+    <label class="chk" style="margin:0 0 12px"><input type="checkbox" id="snd"><span data-i18n="snd"></span></label>
+    <button type="button" class="add" id="thReset" data-i18n="thReset" style="background:transparent;color:var(--muted);border:1px solid var(--line)"></button>
+  </section>
+  </div>
+  <div class="ov" id="dlg" hidden><div class="box" role="alertdialog" aria-modal="true" aria-labelledby="dmsg"><p id="dmsg"></p><div class="dbt"><button type="button" id="dno" data-i18n="no"></button><button type="button" id="dyes" data-i18n="yes"></button></div></div></div>
+  <footer data-i18n="foot"></footer>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
